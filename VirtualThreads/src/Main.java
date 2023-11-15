@@ -1,17 +1,34 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import java.util.concurrent.*;
+
 public class Main {
+
+    static int n;
+
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        n = 100;
+        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
+            Future[] futures = new Future[n];
+            for(int i=0; i<n; i++){
+                executorService.submit(new Callable<Long>() {
+                    @Override
+                    public Long call() throws Exception {
+                        long start = System.currentTimeMillis();
+                        for(int i=0; i<100000000/n; i++) {
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
-
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
+                        }
+                        long end = System.currentTimeMillis();
+                        return (end-start);
+                    }
+                });
+            }
+            long sum = 0;
+            for(int i=0; i<n; i++){
+                sum += (Long)(futures[i].get());
+            }
+            System.out.println(sum);
+            executorService.shutdown();
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 }
